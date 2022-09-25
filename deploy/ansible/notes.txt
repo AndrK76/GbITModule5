@@ -2,3 +2,6 @@
 2. Настроим ssh
 2.1  ssh-keygen -t rsa
 2.2  cat id_rsa.pub >> authorized_keys
+
+3. Настроим sudo без пароля
+правим в /etc/sudoers.d
