@@ -1,4 +1,4 @@
-- hosts: local
-tasks:
 - name: Install Nginx
-apt: pkg=nginx state=latest
+  hosts: local
+  tasks:
+  apt: pkg=nginx state=latest
