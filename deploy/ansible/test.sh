@@ -1,1 +1,4 @@
-ansible -i ./inventory all -m shell -a 'ping localhost -c 1'
+#!/bin/bash
+
+ansible -i ./inventory all 
+ansible-playbook ./inventory local nginx0.yml

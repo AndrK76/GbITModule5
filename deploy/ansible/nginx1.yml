@@ -1,0 +1,12 @@
+- hosts: local
+sudo: yes
+vars:
+webserver_message: "I am running to the finish line."
+tasks:
+- name: Install Nginx
+apt: pkg=nginx state=present
+notify:
+- Ensure Nginx Is Started
+handlers:
+- name: Ensure Nginx Is Started
+service: name=nginx state=started
