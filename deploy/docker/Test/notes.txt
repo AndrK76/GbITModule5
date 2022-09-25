@@ -20,3 +20,4 @@ docker run -it -h ubt03 --name ubt03 --mount source=DevStorage,destination=/u01 
 apt-get update
 apt-get install net-tools
 
+docker compose up
