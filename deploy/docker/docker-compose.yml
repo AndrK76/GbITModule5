@@ -7,6 +7,7 @@ services:
       context: tst_app
       dockerfile: Dockerfile
     image: tst-app:1.0.0
+    container_name: tst-app
     ports:
       - 81:80
     environment:
@@ -16,6 +17,17 @@ services:
 #      tst_network:
 #        ipv4_address: 172.10.0.11
 
+
+  net_app:
+    build:
+      context: net_app
+      dockerfile: Dockerfile
+    image: net-app:0.1.0
+    container_name: net-app
+    ports:
+      - 5000:5000
+      - 5001:5001
+            
 
 #networks:
 #  tst_network:
