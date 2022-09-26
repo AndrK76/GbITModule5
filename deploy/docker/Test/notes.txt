@@ -1,0 +1,23 @@
+Start DockerDesktop
+
+docker images
+docker ps
+docker ps -a
+
+docker run -it -h ubt01 --name ubt01 ubuntu:22.04
+docker exec -it ubt01 bash
+
+docker stop ubt01
+
+
+
+docker run -d -h utst --name utst -p 82:80  docker/getting-started
+
+docker run -it -h ubt03 --name ubt03 --mount source=DevStorage,destination=/u01 ubuntu:22.04
+
+
+
+apt-get update
+apt-get install net-tools
+
+docker compose up
