@@ -1,7 +1,7 @@
 ﻿## Docker
 
 - [Заметки](Test/notes.txt)
-- [Скриншоты](screenshots.docx)
+- [Скриншоты](ScreenShots.docx)
 
 ### Docker Compose
 
@@ -9,5 +9,6 @@
 - Nginx с показом статической странички   [tst-app](tst_app/Dockerfile)
 - Очень простое .Net приложение [net-app](net_app/Dockerfile)
 
- docker-compose build
- docker-compose up
+docker-compose build
+
+docker-compose up
