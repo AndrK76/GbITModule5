@@ -1,9 +1,9 @@
-# k8s
+п»ї# k8s
 
 ### [ScreenShots](ScreenShots.docx)
 
-- [Пример 1](nginx-deployment.yaml)
-- [Пример 2](load-balancer-example.yaml) 
+- [РџСЂРёРјРµСЂ 1](nginx-deployment.yaml)
+- [РџСЂРёРјРµСЂ 2](load-balancer-example.yaml) 
 
 
 ### Notes example 2
