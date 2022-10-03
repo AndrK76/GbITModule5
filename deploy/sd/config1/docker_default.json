@@ -1,0 +1,34 @@
+[
+    {
+        "Name": "docker_default",
+        "Id": "9e3636ed901b672ebe5776bc80daa7c95842026f595cae36f274b6e67d6c0c07",
+        "Created": "2022-09-25T19:39:20.4969063Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.network": "default",
+            "com.docker.compose.project": "docker",
+            "com.docker.compose.version": "2.10.2"
+        }
+    }
+]
