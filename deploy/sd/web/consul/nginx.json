@@ -1,0 +1,18 @@
+{
+    "service": {
+        "name": "web",
+        "port": 80,
+        "tags": [
+            "web",
+            "application",
+            "urlprefix-/"
+        ],
+        "check": {
+            "id": "web_app_status",
+            "name": "Web Application Status",
+            "tcp": "localhost:80",
+            "interval": "30s",
+            "timeout": "20s"
+        }
+    }
+}

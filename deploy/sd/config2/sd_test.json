@@ -1,0 +1,62 @@
+[
+    {
+        "Name": "sd_test",
+        "Id": "7c8b1038ac2a6018cca414227af2501daafa1cda3372d953626eae2ffaed20ce",
+        "Created": "2022-10-03T19:09:33.3161886Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.20.0.0/16"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "0ab8c335ca967fea6b1b8fe62da38fd098a6ab29e06bc8404aa4f99bf69e61e1": {
+                "Name": "sd-web_1-1",
+                "EndpointID": "a9da20862a04627cb4155bad2a38df36e3bd5f18bd000f621f251d5f931af35b",
+                "MacAddress": "02:42:ac:14:0a:0b",
+                "IPv4Address": "172.20.10.11/16",
+                "IPv6Address": ""
+            },
+            "1566197247ed3a563a11f39edd85d4cee00c09e08f208b504eed84992db1b76d": {
+                "Name": "sd-web_2-1",
+                "EndpointID": "40026eeb2758843b839b8baa6ed3e172cb45ed289c25cf38199d248cb46f88ad",
+                "MacAddress": "02:42:ac:14:0a:0c",
+                "IPv4Address": "172.20.10.12/16",
+                "IPv6Address": ""
+            },
+            "5c187d26c4251c64708bf91d3a039b41bdc966d87312cfe7b626def8387f2eda": {
+                "Name": "sd-load_balancer-1",
+                "EndpointID": "82c342ebf1b7efe9d1d399f800b4497dfcb0573e695631898e8d1855de9666b0",
+                "MacAddress": "02:42:ac:14:14:64",
+                "IPv4Address": "172.20.20.100/16",
+                "IPv6Address": ""
+            },
+            "78b6b2492c0085e0a298e5480ceaf477499f329e4c0b324022464d88f0bc0f3c": {
+                "Name": "sd-consul_server-1",
+                "EndpointID": "af99c000c73cb224ecf6a992940b92a1a38de1677cd67d3487e0ca23953528c9",
+                "MacAddress": "02:42:ac:14:14:02",
+                "IPv4Address": "172.20.20.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.network": "test",
+            "com.docker.compose.project": "sd",
+            "com.docker.compose.version": "2.10.2"
+        }
+    }
+]

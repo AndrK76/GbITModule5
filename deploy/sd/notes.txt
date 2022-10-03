@@ -1,0 +1,9 @@
+Bridge with Docker for Windows
+https://forums.docker.com/t/bridge-with-docker-for-windows/30936/5
+
+
+https://stackoverflow.com/questions/60534877/docker-on-windows-10-networking-issue
+
+
+https://forums.docker.com/t/bridge-with-docker-for-windows/30936/10
+https://www.itechtics.com/enable-hyper-v-windows-10-home/

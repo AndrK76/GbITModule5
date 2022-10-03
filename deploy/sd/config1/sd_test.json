@@ -1,0 +1,36 @@
+[
+    {
+        "Name": "sd_test",
+        "Id": "a4eaffd085edc23fea03bc0a12179d7208f914e858229298316e84b33aa3f92b",
+        "Created": "2022-10-03T18:47:51.8906662Z",
+        "Scope": "local",
+        "Driver": "ipvlan",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.20.0.0/16",
+                    "Gateway": "172.20.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": true,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {
+            "parent": "eth0"
+        },
+        "Labels": {
+            "com.docker.compose.network": "test",
+            "com.docker.compose.project": "sd",
+            "com.docker.compose.version": "1.29.2"
+        }
+    }
+]
