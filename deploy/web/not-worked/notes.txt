@@ -1,0 +1,4 @@
+1. start cluster
+2. create from base nginx with 80 & 22 ports
+kubectl apply -f ubuntu-deployment.yaml
+kubectl get pods
