@@ -1,20 +1,17 @@
-# Конфигурирование NGINX
+# РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ NGINX
 
-Для тестов создаю образ [Dockerfile](web-image/Dockerfile)
+Р”Р»СЏ С‚РµСЃС‚РѕРІ СЃРѕР·РґР°СЋ РѕР±СЂР°Р· [Dockerfile](web-image/Dockerfile)
 
-строим  -  
+СЃС‚СЂРѕРёРј  -  
 ```
 cd web-image
 docker build -t web-test .
-```
-
-![ScreenShot01](ScreenShots/Screenshot01.png)
+``` ![ScreenShot01](ScreenShots/Screenshot01.png)
 
 ```
 docker images
-```
-![ScreenShot02](ScreenShots/Screenshot02.png)
+``` ![ScreenShot02](ScreenShots/Screenshot02.png)
 
 
-контейнеры создались, запустились и остановились
+РєРѕРЅС‚РµР№РЅРµСЂС‹ СЃРѕР·РґР°Р»РёСЃСЊ, Р·Р°РїСѓСЃС‚РёР»РёСЃСЊ Рё РѕСЃС‚Р°РЅРѕРІРёР»РёСЃСЊ
 
