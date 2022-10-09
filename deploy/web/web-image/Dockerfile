@@ -12,5 +12,6 @@ COPY index.html /tmp/index.html
 COPY index2.html /tmp/index2.html
 
 EXPOSE 80
+EXPOSE 8080
 EXPOSE 8081
 
