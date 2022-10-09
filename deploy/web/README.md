@@ -1,5 +1,6 @@
 ﻿# Конфигурирование NGINX
 
+## Подготовка стенда
 Для тестов создаю образ [Dockerfile](web-image/Dockerfile)
 
 ```
@@ -32,4 +33,25 @@ ls -l /u01
 docker start web-main
 docker ps
 ```
-![ScreenShot04](ScreenShots/Screenshot03.png)
+![ScreenShot04](ScreenShots/Screenshot04.png)
+
+Подключаемся, переносим файлы из /tmp, настраиваем хранение логов каталоги в /u01
+```
+docker exec -it web-main bash
+mc
+...
+```
+![ScreenShot05](ScreenShots/Screenshot05.png)
+
+Далее все конфиги в каталоге [/u01/conf](u/web-test/conf)
+
+основной конфиг nginx скопирован в [/u01/conf/nginx.conf](u/web-test/conf/nginx.conf)
+```
+nginx -t
+nginx
+ps -ef
+```
+![ScreenShot06](ScreenShots/Screenshot06.png)
+
+
+

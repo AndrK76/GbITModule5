@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 RUN apt update && \
     apt install -y --no-install-recommends \
     nginx curl vim nano net-tools zip unzip \
-    jq dnsutils iputils-ping mc && \
+    jq dnsutils iputils-ping mc dos2unix && \
     apt clean && \
     rm -rf /var/lib/apt/lists
 
