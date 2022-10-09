@@ -67,3 +67,11 @@ nginx -s  reload
 ![ScreenShot2-01](ScreenShots/Screenshot2-01.png)
 
 Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_1.conf](u/web-test/conf/test_1.conf)
+
+### 2. Добавление location
+![ScreenShot2-01](ScreenShots/Screenshot2-01.png)
+
+Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_2.conf](u/web-test/conf/test_2.conf)
+![ScreenShot2-11](ScreenShots/Screenshot2-11.png)
+![ScreenShot2-12](ScreenShots/Screenshot2-12.png)
+![ScreenShot2-13](ScreenShots/Screenshot2-13.png)
