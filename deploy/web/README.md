@@ -82,4 +82,4 @@ nginx -s  reload
 ![ScreenShot3-04](ScreenShots/Screenshot3-04.png)
 ![ScreenShot3-05](ScreenShots/Screenshot3-05.png)
 
-Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_2.conf](u/web-test/conf/test_2.conf)
+Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_3.conf](u/web-test/conf/test_3.conf)
