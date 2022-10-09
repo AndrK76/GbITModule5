@@ -4,6 +4,8 @@ docker run -it -h ngx --name nginx-test -p 80:80 --mount source=nginx_test,desti
 docker start nginx-test
 docker exec -it nginx-test bash
 apt-get update
+apt-get install curl
+apt-get install net-tools
 apt-get install mc
 apt-get install nginx
 
