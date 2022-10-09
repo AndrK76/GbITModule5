@@ -60,3 +60,10 @@ ps -ef
 ![ScreenShot1-01](ScreenShots/Screenshot1-01.png)
 Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_0.conf](u/web-test/conf/test_0.conf)
 
+### 1. Динамическая перезагрузка конфигурации
+```
+nginx -s  reload
+```
+![ScreenShot2-01](ScreenShots/Screenshot2-01.png)
+
+Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_1.conf](u/web-test/conf/test_1.conf)
