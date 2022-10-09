@@ -54,4 +54,9 @@ ps -ef
 ![ScreenShot06](ScreenShots/Screenshot06.png)
 
 
+## Тесты
+
+### 0. Проверка работы
+![ScreenShot1-01](ScreenShots/Screenshot1-01.png)
+Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_0.conf](u/web-test/conf/test_0.conf)
 
