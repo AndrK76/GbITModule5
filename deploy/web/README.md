@@ -83,3 +83,19 @@ nginx -s  reload
 ![ScreenShot3-05](ScreenShots/Screenshot3-05.png)
 
 Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_3.conf](u/web-test/conf/test_3.conf)
+
+### 4. Proxy (вариант)
+данные с основного сервера 
+![ScreenShot4-01](ScreenShots/Screenshot4-01.png)
+![ScreenShot4-02](ScreenShots/Screenshot4-02.png)
+
+данные со второго
+![ScreenShot4-03](ScreenShots/Screenshot4-03.png)
+![ScreenShot4-04](ScreenShots/Screenshot4-04.png)
+
+Логи
+![ScreenShot4-05](ScreenShots/Screenshot4-05.png)
+
+Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_4.conf](u/web-test/conf/test_4.conf)
+
+#### Каталог [/u01]((u/web-test)
