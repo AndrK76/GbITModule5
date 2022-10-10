@@ -98,4 +98,4 @@ nginx -s  reload
 
 Копия конфига /etc/nginx/sites-enabled/test.conf -> [/u01/conf/test_4.conf](u/web-test/conf/test_4.conf)
 
-#### Каталог [/u01]((u/web-test)
+#### Каталог [/u01](u/web-test)
