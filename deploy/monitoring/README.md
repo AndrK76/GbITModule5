@@ -113,7 +113,6 @@ kubectl get services --namespace=monitoring
 ![screenshot 006](screenshots/006.png)
 ![screenshot 007](screenshots/007.png)
 
-##
-Эмуляция нагрузки
+## Эмуляция нагрузки
 
 А вот здесь не разобрался 
