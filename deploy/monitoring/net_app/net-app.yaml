@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+   
+metadata:
+  name: net-app-test
+  labels:
+    app: net-app
+   
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: net-app
+   
+  template:
+    metadata:
+      labels:
+       app: net-app
+    spec:
+      containers:
+      - image: cr.yandex/crp1phul7djlf328ee2d/net-app:0.1.0 
+        name: net-app-test
+        ports:
+        - containerPort: 5000
+   
