@@ -19,7 +19,6 @@ kubectl apply -f elasticsearch.svc
 kubectl apply -f kibana.yaml
 
 kubectl apply -f kibana.svc
-
 ```
 
 ![screenshot 01](screenshots/01.png)
@@ -40,7 +39,70 @@ kubectl get pods
 >    value: http://elasticsearch:9200 
 в [kibana.yaml](try01/kibana.yaml)
 
-и
+
 >    clusterIP: None
 в [elasticsearch.svc](try01/elasticsearch.svc)
  
+ 
+## Попытка 2 
+
+удаляю 
+
+```
+kubectl delete -f kibana.svc
+
+kubectl delete -f kibana.yaml
+
+kubectl delete -f elasticsearch.svc
+
+kubectl delete -f elasticsearch-ss.yaml
+
+cd ..
+```
+изменяю
+
+[elasticsearch-ss.yaml](try02/elasticsearch-ss.yaml)
+[elasticsearch.svc](try02/elasticsearch.svc)
+
+
+запускаю elasticsearch и смотрю адрес сервиса
+
+```
+cd try02
+kubectl apply -f elasticsearch-ss.yaml
+
+kubectl apply -f elasticsearch.svc
+
+kubectl get services
+```
+
+![screenshot 03](screenshots/03.png)
+
+правлю [kibana.yaml](try02/kibana.yaml) и запускаю дальше 
+
+```
+kubectl apply -f kibana.yaml
+
+kubectl apply -f kibana.svc
+
+kubectl get services
+```
+
+![screenshot 04](screenshots/04.png)
+
+тоже не работает, смотрю поды
+```
+kubectl get pods
+```
+![screenshot 05](screenshots/05.png)
+
+и видно что pod с elasticsearch не стартовал нормально
+
+пробую его пробросить
+
+```
+kubectl port-forward es-cluster-0 9200:9200 --address='0.0.0.0'
+```
+разумеется не получается
+
+![screenshot 06](screenshots/06.png)
