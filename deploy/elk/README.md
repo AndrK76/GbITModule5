@@ -1,6 +1,6 @@
 ﻿# ELK
 
-## Так как в методичке используется ingreы для kibana - не имея своего домена вместо ingres использую LoadBalancer [kibana.svc](kibana.svc)
+### Так как в методичке используется ingreы для kibana - не имея своего домена вместо ingres использую LoadBalancer [kibana.svc](kibana.svc)
 
 
 ## Попытка развернуть по методичке
@@ -32,14 +32,15 @@ kubectl get services
 kubectl get pods
 ```
 и вижу что что-то пошло не так
+
 ![screenshot 02](screenshots/02.png)
 
 анализирую файлы
 смутило 2 места
->     value: http://elasticsearch:9200 
+>    value: http://elasticsearch:9200 
 в [kibana.yaml](try01/kibana.yaml)
 
 и
->     clusterIP: None
+>    clusterIP: None
 в [elasticsearch.svc](try01/elasticsearch.svc)
  
