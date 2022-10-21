@@ -106,3 +106,12 @@ kubectl port-forward es-cluster-0 9200:9200 --address='0.0.0.0'
 разумеется не получается
 
 ![screenshot 06](screenshots/06.png)
+
+
+## Попытка 3
+
+```
+cd try3
+kubectl get namespaces
+kubectl create -f [kube-logging.yaml](try3/kube-logging.yaml)
+```
