@@ -112,6 +112,8 @@ kubectl port-forward es-cluster-0 9200:9200 --address='0.0.0.0'
 
 [интернет](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-elasticsearch-fluentd-and-kibana-efk-logging-stack-on-kubernetes-ru)
 
+
+### elasticsearch
 [kube-logging.yaml](try3/kube-logging.yaml)
 [elasticsearch_svc.yaml](try3/elasticsearch_svc.yaml)
 
@@ -148,3 +150,66 @@ kubectl create -f elasticsearch_statefulset.yaml
 и пошла другая ошибка
 
 ![screenshot 11](screenshots/11.png)
+
+меняем образ
+
+```
+kubectl delete -f elasticsearch_statefulset.yaml
+kubectl delete  persistentvolumeclaim data-es-cluster-0 -n kube-logging
+kubectl describe persistentvolumeclaim -n kube-logging
+kubectl apply -f elasticsearch_statefulset.yaml
+kubectl get pods -n  kube-logging
+```
+
+![screenshot 12](screenshots/12.png)
+
+Поды стартовали!!!!
+
+```
+kubectl port-forward es-cluster-0 9200:9200 --namespace=kube-logging
+```
+![screenshot 13](screenshots/13.png)
+
+[kibana.yaml](try3/kibana.svc) [kibana.yaml](try3/kibana.svc)
+
+```
+kubectl apply -f kibana.svc
+kubectl apply -f kibana.yaml
+kubectl get service -n kube-logging
+```
+
+Тут правда yandex поругался вначале
+
+![screenshot 14](screenshots/14.png)
+
+
+но в итоге
+![screenshot 15](screenshots/15.png)
+
+![screenshot 16](screenshots/16.png)
+
+### Настраиваем fluent
+
+[fluentd.yaml](try3/fluentd.yaml)
+
+```
+kubectl create -f fluentd.yaml
+kubectl get daemonsets -n kube-logging
+```
+![screenshot 17](screenshots/17.png)
+
+![screenshot 18](screenshots/18.png)
+
+![screenshot 19](screenshots/19.png)
+
+
+### добавляем тестовое приложение
+
+[counter.yaml](try3/counter.yaml)
+
+```
+kubectl create -f counter.yaml
+kubectl get pods -n kube-logging
+```
+
+![screenshot 20](screenshots/20.png)
