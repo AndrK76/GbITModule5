@@ -184,6 +184,7 @@ kubectl get service -n kube-logging
 
 
 но в итоге
+
 ![screenshot 15](screenshots/15.png)
 
 ![screenshot 16](screenshots/16.png)
