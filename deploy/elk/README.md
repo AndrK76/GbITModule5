@@ -5,10 +5,10 @@
 
 ## Попытка развернуть по методичке
 
-[elasticsearch-ss.yaml](try01/elasticsearch-ss.yaml)
-[elasticsearch.svc](try01/elasticsearch.svc)
-[kibana.yaml](try01/kibana.yaml)
-[kibana.svc](try01/kibana.svc)
+[elasticsearch-ss.yaml](try1/elasticsearch-ss.yaml)
+[elasticsearch.svc](try1/elasticsearch.svc)
+[kibana.yaml](try1/kibana.yaml)
+[kibana.svc](try1/kibana.svc)
 
 ```
 cd try01
@@ -37,11 +37,11 @@ kubectl get pods
 анализирую файлы
 смутило 2 места
 >    value: http://elasticsearch:9200 
-в [kibana.yaml](try01/kibana.yaml)
+в [kibana.yaml](try1/kibana.yaml)
 
 
 >    clusterIP: None
-в [elasticsearch.svc](try01/elasticsearch.svc)
+в [elasticsearch.svc](try1/elasticsearch.svc)
  
  
 ## Попытка 2 
@@ -61,14 +61,14 @@ cd ..
 ```
 изменяю
 
-[elasticsearch-ss.yaml](try02/elasticsearch-ss.yaml)
-[elasticsearch.svc](try02/elasticsearch.svc)
+[elasticsearch-ss.yaml](try2/elasticsearch-ss.yaml)
+[elasticsearch.svc](try2/elasticsearch.svc)
 
 
 запускаю elasticsearch и смотрю адрес сервиса
 
 ```
-cd try02
+cd try2
 kubectl apply -f elasticsearch-ss.yaml
 
 kubectl apply -f elasticsearch.svc
@@ -78,7 +78,7 @@ kubectl get services
 
 ![screenshot 03](screenshots/03.png)
 
-правлю [kibana.yaml](try02/kibana.yaml) и запускаю дальше 
+правлю [kibana.yaml](try2/kibana.yaml) и запускаю дальше 
 
 ```
 kubectl apply -f kibana.yaml
