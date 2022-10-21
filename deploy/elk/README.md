@@ -110,8 +110,41 @@ kubectl port-forward es-cluster-0 9200:9200 --address='0.0.0.0'
 
 ## Попытка 3
 
+[интернет](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-elasticsearch-fluentd-and-kibana-efk-logging-stack-on-kubernetes-ru)
+
+[kube-logging.yaml](try3/kube-logging.yaml)
+[elasticsearch_svc.yaml](try3/elasticsearch_svc.yaml)
+
 ```
 cd try3
 kubectl get namespaces
-kubectl create -f [kube-logging.yaml](try3/kube-logging.yaml)
+kubectl create -f kube-logging.yaml
+kubectl create -f elasticsearch_svc.yaml
+get services -n kube-logging
 ```
+![screenshot 07](screenshots/07.png)
+
+[elasticsearch_statefulset.yaml](try3/elasticsearch_statefulset.yaml)
+
+```
+kubectl create -f elasticsearch_statefulset.yaml
+kubectl get pods -n kube-logging
+kubectl rollout status sts/es-cluster --namespace=kube-logging
+```
+
+![screenshot 08](screenshots/08.png)
+
+И тут меня осенило. Дело было не в бобине.
+
+![screenshot 09](screenshots/09.png)
+
+сменил тип диска
+
+```
+kubectl create -f elasticsearch_statefulset.yaml
+```
+![screenshot 10](screenshots/10.png)
+
+и пошла другая ошибка
+
+![screenshot 11](screenshots/11.png)
