@@ -1,0 +1,43 @@
+pipeline {  
+ agent any  
+ environment {  
+  dotnet = 'C:\\Program Files\\dotnet\\dotnet.exe'  
+ }  
+ stages {  
+  stage('Checkout') {  
+   steps {
+       git credentialsId: '8f13ba45-6447-4ac1-8843-516b829e1e94', url: 'https://github.com/AndrK76/GbITModule5', branch: 'cicd/test'
+   }  
+  }  
+ stage('Build') {  
+   steps {  
+    bat 'dotnet build %WORKSPACE%\\cicd\\test\\HRM\\HRM.sln --configuration Release' 
+   }  
+  }  
+  stage('Test') {  
+   steps {  
+    bat 'dotnet test %WORKSPACE%\\cicd\\test\\HRM\\HRMTest\\HRMTest.csproj --logger:trx'  
+   }  
+  }
+  
+  stage("Release"){
+      steps {
+      bat 'dotnet build  %WORKSPACE%\\jenkins-demo\\cicd\\test\\HRM\\HRM.sln /p:PublishProfile="%WORKSPACE%\\cicd\\test\\HRM\\HRM.API\\Properties\\PublishProfiles\\JenkinsProfile.pubxml" /p:Platform="Any CPU" /p:DeployOnBuild=true /m'
+    }
+  }
+  
+  stage('Deploy') {
+    steps {
+    // Stop IIS
+    bat 'net stop "w3svc"'
+    
+    // Deploy package to IIS
+    bat '"C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe" -verb:sync -source:package="%WORKSPACE%\\cicd\\test\\HRM\\HRM.API\\bin\\Release\\net6.0\\HRM.API.zip" -dest:auto -setParam:"IIS Web Application Name"="HRM.Web" -skip:objectName=filePath,absolutePath=".\\\\PackageTmp\\\\Web.config$" -enableRule:DoNotDelete -allowUntrusted=true'
+    
+    // Start IIS again
+    bat 'net start "w3svc"'
+    }
+ }
+
+ }  
+} 
