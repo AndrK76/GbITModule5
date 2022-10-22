@@ -18,19 +18,19 @@ namespace HRM.API.Db
                 context.Employees!.AddRange(
                     new Employee
                     {
-                        Name = "Md. Mahedee Hasan",
-                        Designation = "Head of Software Development",
-                        FathersName = "Yeasin Bhuiyan",
-                        MothersName = "Moriom Begum",
+                        Name = "г.н Анжынер",
+                        Designation = "Глава департамента It",
+                        FathersName = "Иван Иванов",
+                        MothersName = "Петр петров",
                         DateOfBirth = new DateTime(1984, 12, 19, 00, 00, 00)
                     },
 
                     new Employee
                     {
-                        Name = "Khaleda Islam",
-                        Designation = "Software Engineer",
-                        FathersName = "Shahidul Islam",
-                        MothersName = "Momtaz Begum",
+                        Name = "富山県～金輪県",
+                        Designation = "도야마-카나와",
+                        FathersName = "ტოიამა ტო კანავა",
+                        MothersName = "Тояма То Канава",
                         DateOfBirth = new DateTime(1990, 10, 29, 00, 00, 00)
                     },
 

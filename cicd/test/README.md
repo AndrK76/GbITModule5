@@ -33,3 +33,11 @@
 Результат ожидаемый, так как нет тесты ещё не закомичены и не запушены,
 выполняю
 
+![screenshot 08](screenshots/08.png)
+
+
+После долгих попыток получилось
+
+![screenshot 09](screenshots/09.png)
+
+![screenshot 10](screenshots/10.png)
