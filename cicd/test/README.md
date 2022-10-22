@@ -41,3 +41,6 @@
 ![screenshot 09](screenshots/09.png)
 
 ![screenshot 10](screenshots/10.png)
+
+
+Сделал небольшие изменения в проекте, поменял индусские имена
