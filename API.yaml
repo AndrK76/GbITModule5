@@ -1,0 +1,3871 @@
+openapi: 3.0.1
+info:
+  title: Service Desk from Team One API Gateway
+  version: v 0.1.0
+  description: Спецификация API-Gateway
+externalDocs:
+  description: Рабочий проект
+  url: https://drive.google.com/drive/folders/1n1lMK1b-NzuvvlEfG3CuvUvgAdx6LpXy
+tags:
+  - name: Auth
+    description: Авторизация
+  - name: Contract Work
+    description: Работа с заказами, договорами, услугами и заявками
+  - name: Tasks
+    description: Работа с задачами и бизнес-правилами
+  - name: Notices
+    description: Работа с уведомлениями и историей
+  - name: Admin
+    description: Управление
+
+
+paths:
+  /auth/signin/:
+    post:
+      tags:
+        - Auth
+      summary: Аутентификация по логину/паролю
+      description: Проверка логина/пароля с последующей выдачей токенов
+      security:
+        - basicAuth: []
+      requestBody:
+        description: Данные аутентификации
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Ответ с токенами
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenAnswer'
+        '403':
+          description: Некорректные логин и пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+  /auth/refresh/:
+    post:
+      tags:
+        - Auth
+      summary: Обновить токены
+      description: Обновляем ранее выданный токен доступа
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Ранее выданный refresh токен
+        content:
+          application/json:
+            schema:
+              type: string
+            example: "Miagsjyhj767GGGG8789789789=="
+      responses:
+        '200':
+          description: Ответ с токенами
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenAnswer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+                
+  /auth/signout:
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Завершить сессию пользователя
+      description: Завершение сессии с аннуляцией выданного токена
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: OK
+  /contracts:
+    get:
+      tags:
+        - Contract Work
+      summary: Получить список контрактов
+      description: Получаем список контрактов, есть возможность пагинации
+      parameters:
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список контрактов
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contract'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Contract Work
+      summary: Создать контракт
+      description: Создать контракт
+      requestBody:
+        description: Контракт
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        '201':
+          description: Созданный контракт
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        $ref: '#/components/schemas/Contract'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /contracts/{contractId}:
+    get:
+      tags:
+        - Contract Work
+      summary: Показать контракт по Id
+      description: Получить один контракт зная его идентификатор
+      parameters:
+        - in: path
+          name: contractId
+          description: ID контракта
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о контракте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Контракт не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый контракт не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Contract Work
+      summary: Изменить контракт
+      description: Изменить контракт
+      parameters:
+        - in: path
+          name: contractId
+          description: ID контракта
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Контракт
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        $ref: '#/components/schemas/Contract'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Контракт не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый контракт не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить контракт
+      description: Пометить контракт как неактуальный
+      tags:
+        - Contract Work
+      parameters:
+        - in: path
+          name: contractId
+          description: ID контракта
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления контракта
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        $ref: '#/components/schemas/Contract'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Контракт не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый контракт не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /contracts/find/:
+    post:
+      tags:
+        - Contract Work
+      summary: Найти контракты
+      description: Найти контракты удовлетворяющие определенным условиям
+      requestBody:
+        description: Параметры поиска
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SearchParam'
+      responses:
+        '200':
+          description: Список контрактов
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contract'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /customers:
+    get:
+      tags:
+        - Contract Work
+      summary: Получить список клиентов
+      description: Получаем список клиентов, есть возможность пагинации
+      parameters:
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список клиентов
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          oneOf:
+                            - $ref: '#/components/schemas/PersonCustomer'
+                            - $ref: '#/components/schemas/CompanyCustomer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Contract Work
+      summary: Создать клиента
+      description: Создать клиента
+      requestBody:
+        description: Клиент
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PersonCustomer'
+                - $ref: '#/components/schemas/CompanyCustomer'
+      responses:
+        '201':
+          description: Созданный контракт
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        oneOf:
+                        - $ref: '#/components/schemas/CompanyCustomer'
+                        - $ref: '#/components/schemas/PersonCustomer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /customers/{customerId}:
+    get:
+      tags:
+        - Contract Work
+      summary: Показать клиента по Id
+      description: Получить один контракт зная его идентификатор
+      parameters:
+        - in: path
+          name: customerId
+          description: ID клиента
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о контракте
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CompanyCustomer'
+                  - $ref: '#/components/schemas/PersonCustomer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Contract Work
+      summary: Изменить клиента
+      description: Изменить клиента
+      parameters:
+        - in: path
+          name: customerId
+          description: ID клиента
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Клиент
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CompanyCustomer'
+                - $ref: '#/components/schemas/PersonCustomer'
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        oneOf:
+                          - $ref: '#/components/schemas/CompanyCustomer'
+                          - $ref: '#/components/schemas/PersonCustomer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить клиента
+      description: Пометить клиента как неактуального
+      tags:
+        - Contract Work
+        - Admin
+      parameters:
+        - in: path
+          name: customerId
+          description: ID клиента
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления клиента
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        oneOf:
+                          - $ref: '#/components/schemas/PersonCustomer'
+                          - $ref: '#/components/schemas/CompanyCustomer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /customers/find/:
+    post:
+      tags:
+        - Contract Work
+      summary: Найти клиентов
+      description: Найти клиентов удовлетворяющие определенным условиям
+      requestBody:
+        description: Параметры поиска
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SearchParam'
+      responses:
+        '200':
+          description: Список клиентов
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          oneOf:
+                            - $ref: '#/components/schemas/PersonCustomer'
+                            - $ref: '#/components/schemas/CompanyCustomer'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /tickets:
+    get:
+      tags:
+        - Contract Work
+      summary: Получить список заказов и заявок
+      description: Получаем список заказов и заявок, есть возможность пагинации
+      parameters:
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список заказов и заявок
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          oneOf:
+                            - $ref: '#/components/schemas/Order'
+                            - $ref: '#/components/schemas/Ticket'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Contract Work
+      summary: Создать заказ или заявку
+      description: Создать заказ или заявку
+      requestBody:
+        description: Заказ или заявка
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/Order'
+                - $ref: '#/components/schemas/Ticket'
+      responses:
+        '201':
+          description: Созданный заказ или заявка
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        oneOf:
+                        - $ref: '#/components/schemas/Ticket'
+                        - $ref: '#/components/schemas/Order'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /tickets/{ticketId}:
+    get:
+      tags:
+        - Contract Work
+      summary: Показать заказ или заявку по Id
+      description: Получить один заказ или заявку зная его идентификатор
+      parameters:
+        - in: path
+          name: ticketId
+          description: ID тикета
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о заказе или заявке
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Appeal'
+                  - $ref: '#/components/schemas/Order'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Обращение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Contract Work
+      summary: Изменить заказ или заявку
+      description: Изменить заказ или заявку
+      parameters:
+        - in: path
+          name: ticketId
+          description: ID клиента
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Клиент
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/Order'
+                - $ref: '#/components/schemas/Appeal'
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        oneOf:
+                          - $ref: '#/components/schemas/Order'
+                          - $ref: '#/components/schemas/Appeal'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Обращение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемое обращение не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить заказ или заявку
+      description: Пометить как неактуальное
+      tags:
+        - Contract Work
+      parameters:
+        - in: path
+          name: ticketId
+          description: ID обращения
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления тикета
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object:
+                        oneOf:
+                          - $ref: '#/components/schemas/Order'
+                          - $ref: '#/components/schemas/Appeal'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Обращение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемое обращение не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /tickets/find/:
+    post:
+      tags:
+        - Contract Work
+      summary: Найти обращения
+      description: Найти обращения удовлетворяющие определенным условиям
+      requestBody:
+        description: Параметры поиска
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SearchParam'
+      responses:
+        '200':
+          description: Список обращений
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          oneOf:
+                            - $ref: '#/components/schemas/Order'
+                            - $ref: '#/components/schemas/Appeal'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /services:
+    get:
+      tags:
+        - Contract Work
+      summary: Получить список услуг
+      description: Получаем список услуг, есть возможность пагинации
+      parameters:
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список услуг
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: { $ref: '#/components/schemas/Service'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Contract Work
+        - Admin
+      summary: Создать услугу
+      description: Создать услугу
+      requestBody:
+        description: Услуга
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Service'}
+      responses:
+        '201':
+          description: Созданная услуга
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Service'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /services/{serviceId}:
+    get:
+      tags:
+        - Contract Work
+      summary: Показать услугу по Id
+      description: Получить одну услугу зная её идентификатор
+      parameters:
+        - in: path
+          name: serviceId
+          description: ID услуги
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация об услуге
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Service'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Обращение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Contract Work
+        - Admin
+      summary: Изменить услугу
+      description: Изменить услугу
+      parameters:
+        - in: path
+          name: serviceId
+          description: ID услуги
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Услуга 
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Service'}
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Service'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Обращение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая услуга не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить услугу
+      description: Пометить как неактуальную
+      tags:
+        - Contract Work
+        - Admin
+      parameters:
+        - in: path
+          name: serviceId
+          description: ID услуги
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления услуги
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Service'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Услуга не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая услуна не найдена"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /services/find/:
+    post:
+      tags:
+        - Contract Work
+      summary: Найти услуги
+      description: Найти услуги удовлетворяющие определенным условиям
+      requestBody:
+        description: Параметры поиска
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SearchParam'
+      responses:
+        '200':
+          description: Список услуг
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: {$ref: '#/components/schemas/Service'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Получить список задач
+      description: Получаем список задач, есть возможность пагинации
+      parameters:
+        - in: query
+          name: user_id
+          description: "Пользователь"
+          schema:
+            type: string
+            format: uuid
+          example: 21438d01-7d7e-412c-9ee5-71d327d66143
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: { $ref: '#/components/schemas/Task'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Tasks
+      summary: Создать задачу
+      description: Создать задачу
+      requestBody:
+        description: Задача
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Task'}
+      responses:
+        '201':
+          description: Созданная задача
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Task'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /tasks/{taskId}:
+    get:
+      tags:
+        - Tasks
+      summary: Показать задачу по Id
+      description: Получить одну задачу зная её идентификатор
+      parameters:
+        - in: path
+          name: taskId
+          description: ID задачи
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о задаче
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Задача не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Tasks
+      summary: Изменить задачу
+      description: Изменить задачу
+      parameters:
+        - in: path
+          name: taskId
+          description: ID Задачи
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Задача 
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Task'}
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Task'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая задача не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить задачу
+      description: Пометить как неактуальную
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: taskId
+          description: ID задачи
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления задачи
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Task'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Задача не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая задача не найдена"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /taskdesks:
+    get:
+      tags:
+        - Tasks
+      summary: Получить список досок
+      description: Получаем список досок, есть возможность пагинации
+      parameters:
+        - in: query
+          name: user_id
+          description: "Пользователь"
+          schema:
+            type: string
+            format: uuid
+          example: 21438d01-7d7e-412c-9ee5-71d327d66143
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список досок
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: { $ref: '#/components/schemas/TaskDesk'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Tasks
+      summary: Создать доску
+      description: Создать доску
+      requestBody:
+        description: Доска
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TaskDesk'}
+      responses:
+        '201':
+          description: Созданная доска
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/TaskDesk'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /taskdesks/{taskdeskId}:
+    get:
+      tags:
+        - Tasks
+      summary: Показать доску по Id
+      description: Получить одну доску зная её идентификатор
+      parameters:
+        - in: path
+          name: taskdeskId
+          description: ID доски
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о доске
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TaskDesk'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Доска не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Tasks
+      summary: Изменить доску
+      description: Изменить доску
+      parameters:
+        - in: path
+          name: taskdeskId
+          description: ID Доски
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Доска 
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskDesk'}
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/TaskDesk'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Доска не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая доска не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить доску
+      description: Пометить как неактуальную
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: taskdeskId
+          description: ID доски
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления доски
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/TaskDesk'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Доска не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая доска не найдена"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /swimlines:
+    get:
+      tags:
+        - Tasks
+      summary: Получить список дорожек
+      description: Получаем список дорожек, есть возможность пагинации
+      parameters:
+        - in: query
+          name: task_desk_id
+          description: "Id доски к которой принадлежит дорожка"
+          schema:
+            type: string
+            format: uuid
+          example: 21438d01-7d7e-412c-9ee5-71d327d66143
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список дорожек
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: { $ref: '#/components/schemas/SwimLine'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Tasks
+      summary: Создать дорожку
+      description: Создать дородку
+      requestBody:
+        description: Дорожка
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SwimLine'}
+      responses:
+        '201':
+          description: Созданная дорожка
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/SwimLine'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /swimlines/{swimlineId}:
+    get:
+      tags:
+        - Tasks
+      summary: Показать дорожку по Id
+      description: Получить одну дорожку зная её идентификатор
+      parameters:
+        - in: path
+          name: swimlineId
+          description: ID дорожки
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о дорожке
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SwimLine'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Дорожка не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый клиент не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Tasks
+      summary: Изменить дорожку
+      description: Изменить дорожку
+      parameters:
+        - in: path
+          name: swimlineId
+          description: ID Дорожки
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Дорожка 
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SwimLine'}
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/SwimLine'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Дорожка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая дорожка не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить дорожку
+      description: Пометить как неактуальную
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: swimlineId
+          description: ID дорожки
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления дорожки
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/SwimLine'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Дорожка не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемая дорожка не найдена"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /swimlinetypes:
+    get:
+      tags:
+        - Tasks
+      summary: Получить список типов дорожек
+      description: Получаем список типов дорожек
+      responses:
+        '200':
+          description: Список типов дорожек
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SwimLineType'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Tasks
+        - Admin
+      summary: Создать тип дорожек
+      description: Создать тип дорожек
+      requestBody:
+        description: Тип дорожки
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SwimLineType'}
+      responses:
+        '201':
+          description: Созданный тип дорожки
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/SwimLineType'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /swimlinetypes/{swimlineTypeId}:
+    get:
+      tags:
+        - Tasks
+      summary: Показать тип дорожки по Id
+      description: Получить один тип дорожки зная идентификатор
+      parameters:
+        - in: path
+          name: swimlineTypeId
+          description: ID типа дорожки
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о типе дорожки
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SwimLineType'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Тип не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый тип не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Tasks
+        - Admin
+      summary: Изменить тип дорожки
+      description: Изменить тип дорожки
+      parameters:
+        - in: path
+          name: swimlineTypeId
+          description: ID типа
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Тип дорожки 
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SwimLineType'}
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/SwimLineType'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Тип дорожки не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый тип не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить тип дорожки
+      description: Пометить как неактуальный
+      tags:
+        - Tasks
+        - Admin
+      parameters:
+        - in: path
+          name: swimlineTypeId
+          description: ID типа дорожки
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления типа дорожки
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/SwimLineType'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Тип дорожки не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый тип дорожки не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /events:
+    get:
+      tags:
+        - Tasks
+      summary: Получить список событий событий
+      description: Получаем список типов дорожек
+      parameters:
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список событий
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: { $ref: '#/components/schemas/Event'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Tasks
+      summary: Создать событие
+      description: Создать событие
+      requestBody:
+        description: Данные события
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Event'}
+      responses:
+        '201':
+          description: Созданное событие
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Event'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /events/{eventId}:
+    get:
+      tags:
+        - Tasks
+      summary: Показать событие по Id
+      description: Получить одно зная идентификатор
+      parameters:
+        - in: path
+          name: eventId
+          description: ID события
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о событии
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Событие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемое событие не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Tasks
+      summary: Удалить событие
+      description: Удалить событие
+      parameters:
+        - in: path
+          name: eventId
+          description: ID события
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/Event'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Событие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемое событие не найдено"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /filterspecifications:
+    get:
+      tags:
+        - Tasks
+      summary: Получить фильтров событий
+      description: Получаем список фильтров событий
+      parameters:
+        - in: query
+          name: page
+          description: "Страница (по умолчанию пусто)"
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: per_page
+          description: "Максимальное количество записей (По умолчанию пусто)"
+          schema:
+            type: integer
+          example: 100
+      responses:
+        '200':
+          description: Список фильтров событий
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResult'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items: { $ref: '#/components/schemas/FilterSpecification'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+    post:
+      tags:
+        - Tasks
+      summary: Создать фильтр событий
+      description: Создать фильтр событий
+      requestBody:
+        description: Фильтр событий
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FilterSpecification'}
+      responses:
+        '201':
+          description: Созданный фильтр событий
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/FilterSpecification'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+  /filterspecifications/{FilterSpecificationId}:
+    get:
+      tags:
+        - Tasks
+      summary: Показать фильтр событий по Id
+      description: Получить один фильтр событий зная идентификатор
+      parameters:
+        - in: path
+          name: FilterSpecificationId
+          description: ID фильтра событий
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "34aa1e84-e761-49de-bfc8-fd69e123e897"
+          
+      responses:
+        '200':
+          description: Информация о фильтре событий
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FilterSpecification'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Тип не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый тип не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Tasks
+      summary: Изменить фильтр событий
+      description: Изменить фильтр событий
+      parameters:
+        - in: path
+          name: FilterSpecificationId
+          description: ID типа
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Фильтр событий 
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FilterSpecification'}
+      responses:
+        '200':
+          description: Результат выполнения операции
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/FilterSpecification'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Фильтр событий не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый тип не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Удалить фильтр событий
+      description: Пометить как неактуальный
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: FilterSpecificationId
+          description: ID фильтра событий
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Результат удаления фильтра событий
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Result'
+                  - type: object
+                    properties:
+                      result_object: {$ref: '#/components/schemas/FilterSpecification'}
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Попытка неавторизованного доступа"
+                status: 401
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Доступ запрещен"
+                status: 403
+        '404':
+          description: Фильтр событий не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Данные не найдены"
+                status: 404
+                details: "Запрашиваемый фильтр событий не найден"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: "Ошибка сервера"
+                status: 500
+                detail: "Что-то пошло не так"
+      security:
+        - bearerAuth: []
+
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      description: Данные для аутентификации
+      properties:
+        login:
+          type: string
+          description: Токен доступа
+          nullable: false
+          example: user_name
+        password:
+          type: string
+          description: Пароль
+          nullable: false
+          example: password
+    TokenAnswer:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Токен доступа
+          nullable: true
+          example: Magsiuiouo#iuioui$jkhjkhjkhjk
+        expires_in:
+          type: integer
+          description: Срок жихни
+          nullable: true
+          format: int32
+          example: 600
+        refresh_token:
+          type: string
+          description: Токен обновления
+          nullable: true
+          example: Magsiuiouo#iuioui$jkhjkhjkhjk
+        scope:
+          type: string
+          description: Область действия
+          nullable: true
+          example: contract+customer
+      description: Ответ с токенами
+    ErrorResult:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Тип ошибки
+          example: Ошибка в параметрах
+        status:
+          type: integer
+          description: Статус ответа
+          format: int32
+          example: 400
+        detail:
+          type: string
+          description: Дополнительная информация
+          nullable: true
+          example: Что-то пошло не так
+      description: Результат ошибочного ответа
+    PaginatedResult:
+      type: object
+      properties:
+        total:
+          type: number
+        page:
+          type: number
+        per_page:
+          type: number
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
+        results:
+          type: array
+          items:
+            type: object
+    Result:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Краткий статус операции
+          nullable: false
+          example: Success
+        comment:
+          type: string
+          description: Комментарий к статусу операции
+          nullable: true
+        result_object:
+          type: object
+          description: Объект
+      description: Результат выполнения операции
+    SearchParam:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Ключ поиска
+          nullable: false
+          example: name
+        value:
+          type: string
+          description: Значение параметра поиска
+          example: Иванов%
+    Contract:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ContractType'
+        customer:
+          oneOf:
+            - $ref: '#/components/schemas/CompanyCustomer'
+            - $ref: '#/components/schemas/PersonCustomer'
+        display_name:
+          type: string
+          example: "Договор 9999/55 на услуги фиксированной связи"
+        contract_num:
+          type: string
+          example: "9999/55"
+        contract_date:
+          type: string
+          example: "2022-01-01"
+        addresses:
+          description: "Адреса"
+          type: array
+          items:  {$ref: '#/components/schemas/Address'}
+      description: Контракт
+    ContractType:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Тип
+          example: 1
+        code:
+          type: string
+          description: Код
+          example: Commercial
+        name:
+          type: string
+          description: Наименование
+          example: Контракт на подключение
+    Customer:
+      type: object
+      description: Клиент
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Тип
+          example: '{00000000-0000-0000-0000-000000000000}'
+    CompanyCustomer:
+      description: Корпоративный клиент
+      allOf:
+        - $ref: '#/components/schemas/Customer'
+        - type: object
+          properties:
+            company:
+              $ref: '#/components/schemas/Company'
+    PersonCustomer:
+      description: Клиент физлицо
+      allOf:
+        - $ref: '#/components/schemas/Customer'
+        - type: object
+          properties:
+            person:
+              $ref: '#/components/schemas/Person'
+    AddressType:
+      description: "Тип адреса"
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Тип
+          example: 1
+        code:
+          type: string
+          description: Код
+          example: Registration
+        name:
+          type: string
+          description: Наименование
+          example: Адрес регистрации
+    Geometry:
+      description: "Тип для описания координат"
+    Address:
+      description: "Адрес"
+      properties:
+        address: 
+          type: string
+          example: "454000 г. Москва, г. Фрязино, д. Ивантеевка, участок 5, стр. 6, вл. 8"
+          description: "Адрес в произвольной форме"
+        type:
+          $ref: '#/components/schemas/AddressType'
+        fias_id:
+          #$ref: 'https://fias.nalogypro.ru/fiasapi/classes/#AddressItem'
+          type: string
+          format: uuid
+          description: "Id справочника ФИАС"
+          example: "3cf1b2a8-a815-4f45-ba23-bcc4dbaff0d4"
+        kladr_id:
+          type: string
+          description: "Id КЛАДР"
+          example: "3101200003800"
+        point:
+          $ref: '#/components/schemas/Geometry'
+        zip:
+          type: string
+          description: "Почтовый индекс"
+          example: "123456"
+    Person:
+      description: "Физ лицо"
+      properties:
+        first_name: {type: string, example: "Иван"}
+        last_name: {type: string, example: "Иванов"}
+        middle_name: {type: string, example: "Иванович"}
+        addresses:
+          description: "Адреса"
+          type: array
+          items:  {$ref: '#/components/schemas/Address'}
+        documents: {$ref: '#/components/schemas/Document'}
+    DocumentType:
+      description: "Тип документа"
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Тип
+          example: 1
+        code:
+          type: string
+          description: Код
+          example: Паспорт РФ
+        name:
+          type: string
+          description: Наименование
+          example: "Паспорт гражданина Российской Федерации"
+        mask: {type: string, description: "Маска формата", example: "N1:99 99,N2:999999"}
+    Document:
+      description: "Документ"
+      properties:
+        type: {$ref: '#/components/schemas/DocumentType'}
+        number1: {type: string, example: "75 00"}
+        number2: {type: string, example: "123456"}
+        number3: {type: string, example: ""}
+        valid_from: {type: string, example: "2020-01-01"}
+        valid_to: {type: string, example: "2036-01-01"}
+        content: {type: object}
+    CompanyType:
+      description: "Тип организации"
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Тип
+          example: 1
+        code:
+          type: string
+          description: Код
+          example: ООО
+        name:
+          type: string
+          description: Наименование
+          example: "Общество с ограниченной ответственностью"
+    Company:
+      description: "Юридическое лицо"
+      properties:
+        type: {$ref: '#/components/schemas/CompanyType'}
+        short_name: {type: string, description: "Краткое наименование", example: 'ООО "Рога и Копыта"'}
+        full_name: 
+          type: string
+          description: "Полное наименование"
+          example: 'Общество с ограниченной ответственностью "Рога и Копыта"'
+        INN: {type: string, description: "ИНН", example: "01234567890"}
+        KPP: {type: string, description: "КПП", example: "01234567"}
+        OGRN: {type: string, description: "ОГРН", example: "10124567"}
+        addresses:
+          description: "Адреса"
+          type: array
+          items:  {$ref: '#/components/schemas/Address'}
+        contacts:
+          description: "Адреса"
+          type: array
+          items:  {$ref: '#/components/schemas/Contact'}
+    Contact:
+      description: "Контакт"
+      properties:
+        name: {type: string, description: "Кратко", example: "Петров - дир по ИТ"}
+        description: 
+          type: string
+          description: "Развернуто"
+          example: "Петров Иван Петрович - директор по ИТ"
+        contacts:
+          description: "Адреса"
+          type: array
+          items:  {$ref: '#/components/schemas/ContactInfo'}
+    ContactInfoType:
+      description: "Тип контактной информации"
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Тип
+          example: 1
+        code:
+          type: string
+          description: Код
+          example: Phone
+        name:
+          type: string
+          description: Наименование
+          example: "Основной телефон"
+    ContactInfo:
+      description: "Контактная информация"
+      properties:
+        type: {$ref: '#/components/schemas/ContactInfoType'}
+        value: {type: string, example: "(495)-123-45-56"}
+    Employee:
+      description: "Сотрудник"
+      properties:
+        id: {type: string, format: uuid, example: "81a782d6-12be-4e00-b783-f5c31368f850"}
+        login: {type: string, example: "ivanoff"}
+        name: {type: string, example: "Инженер Иванов семнадцатый"}
+    Ticket:
+      description: "Завки и заказы"
+      properties:
+        author: {$ref: '#/components/schemas/Employee'}
+        divsion:  {$ref: '#/components/schemas/Division'}
+        customer: {$ref: '#/components/schemas/Customer'}
+        contact: {$ref: '#/components/schemas/Contact'}
+        adress: {$ref: '#/components/schemas/Address'}
+        time_stamp: {type: string, format: datetime, example: "2022-11-01 13:00:00"}
+        is_active: {type: boolean, example: True}
+        is_paid: {type: boolean, example: True, description: Оплачено}
+        is_completed: {type: boolean, example: False, description: Закрыто}
+        is_cancelled: {type: boolean, example: False, description: Отменено}
+        total_amount: {type: number, example: 0, description: Стоимость}
+        comment: {type: string, description: Примечание}
+    OrderType:
+      description: "Тип заказа"
+      properties:
+        id: {type: integer, format: int32, description: Тип, example: 1}
+        code: { type: string, description: Код, example: Phone}
+        name: {type: string, description: Наименование, example: "Подключение телефонии"}
+    Order:
+      description: "Заказ"
+      allOf:
+        - $ref: '#/components/schemas/Ticket'
+        - type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/OrderType'  
+        services:
+          type: array
+          items:  {$ref: '#/components/schemas/OrderService'}
+    AppealType:
+      description: "Тип заявки"
+      properties:
+        id: {type: integer, format: int32, description: Тип, example: 1}
+        code: { type: string, description: Код, example: Выезд}
+        name: {type: string, description: Наименование, example: "Выезд на адрес"}
+    Appeal:
+      description: "Заявка"
+      allOf:
+        - $ref: '#/components/schemas/Ticket'
+        - type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/AppealType'     
+    Division:
+      description: Подразделение
+      properties:
+        id: {type: integer, example: 4536898}
+        name: {type: string, example: "Департамент Урал"}
+    ServiceType:
+      description: Тип услуги
+      properties:
+        id: {type: integer, format: int32, description: Тип, example: 1}
+        code: { type: string, description: Код, example: Выезд}
+        name: {type: string, description: Наименование, example: "Выезд на адрес"}
+    Service:
+      description: Услуга
+      properties:
+        type: {$ref: '#/components/schemas/ServiceType' }
+        price: {type: number, description: "Текущая цена", example: "1235.66"}
+    OrderService:
+      description: Услуга по заказу
+      properties:
+        line_no: {type: integer, description: "No п/п", example: 1}
+        service: {$ref: '#/components/schemas/Service' }
+        count: {type: number, description: "Количество", example: 1}
+        price: {type: number, description: "Цена", example: 210.2}
+        comment: {type: string, description: "Примечание"}
+    Event:
+      description: Событие
+      properties:
+        type:  {$ref: '#/components/schemas/EventType'}
+        id: {type: string, format: uuid, example: 88fea0b0-9cda-43a9-9e24-2fa52ccdd33a}
+        author: {$ref: '#/components/schemas/Employee'}
+        text: {type: string}
+
+    Task:
+      description: Задача
+      properties:
+        id: {type: string, format: uuid, example: b8836eb1-2e24-4232-ae06-4eb86f297061}
+        author: {$ref: '#/components/schemas/Employee'}
+        parent_task: {$ref: '#/components/schemas/Task'}
+        name: {type: string, example: "Подключить интернет у Петрова"}
+        datetime_of_creation: {type: string, format: datetime, example: "2022-11-01 20:02:03"}
+        completion_datatime: {type: string, format: datetime, example: "2022-11-01 20:02:03"}
+        order: {$ref: '#/components/schemas/Order'}
+        appeal: {$ref: '#/components/schemas/Appeal'}
+        events: {type: array, items:  {$ref: '#/components/schemas/Event'}}
+
+    TaskDesk:
+      description: Доска с задачами
+      properties:
+        id: {type: string, format: uuid, example: b8836eb1-2e24-4232-ae06-4eb86f297061}
+        author: {$ref: '#/components/schemas/Employee'}
+        name: {type: string, example: "Доска Иванова с незакрытыми обращениями"}
+        tasks: 
+          type: array
+          items: {$ref: '#/components/schemas/Task'}
+        filter_specifications: {type: array, items: {$ref: '#/components/schemas/FilterSpecification'}}
+        
+    
+    EventType:
+      description: Тип события
+      properties:
+        id: {type: string, format: uuid, example: b8836eb1-2e24-4232-ae06-4eb86f297061}
+        name: {type: string}
+        description: {type: string}
+        list_of_settings: {type: string}
+        
+    SwimLineType:
+      description: Тип дорожки
+      properties:
+        id: {type: string, format: uuid, example: b8836eb1-2e24-4232-ae06-4eb86f297061}
+        name: {type: string}
+        
+    SwimLine:
+      description: Дорожка
+      properties:
+        id: {type: string, format: uuid, example: b8836eb1-2e24-4232-ae06-4eb86f297061}
+        type: {$ref: '#/components/schemas/SwimLineType'}
+        name: {type: string}
+        task_desk:  {$ref: '#/components/schemas/TaskDesk'}
+        tasks:  
+          type: array
+          items: {$ref: '#/components/schemas/Task'}
+    
+    FilterSpecification:
+      description: Настройки фильтра
+      properties:
+        id: {type: string, format: uuid}
+        task_desk: {$ref: '#/components/schemas/TaskDesk'}
+        name: {type: string}
+        settings: {type: string}
+
+  securitySchemes:
+    basicAuth:
+      scheme: basic
+      type: http
+      description: Base64(clientId:clientSecret)
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
